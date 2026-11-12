@@ -1,0 +1,17 @@
+# Dependencias de Node
+node_modules/
+**/node_modules/
+
+# Renders de video y fotogramas de verificación temporal
+out/
+**/out/
+*.mp4
+*.mov
+*.webm
+
+# Archivos de sistema y cachés
+.DS_Store
+.remotion/
+**/.remotion/
+dist/
+**/dist/
