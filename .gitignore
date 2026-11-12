@@ -1,0 +1,12 @@
+node_modules/
+**/node_modules/
+out/
+**/out/
+*.mp4
+*.mov
+*.webm
+.DS_Store
+.remotion/
+**/.remotion/
+dist/
+**/dist/

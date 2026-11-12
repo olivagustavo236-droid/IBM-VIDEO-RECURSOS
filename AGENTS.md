@@ -1,16 +1,15 @@
-# Guía Maestra de Generación de Videos (SaaS + Acabados Pro)
+# Guía Maestra de Generación de Videos (SaaS + Presentaciones Interactivas)
 
-Este repositorio unifica dos skills especializadas para generar videos mediante código con Remotion:
+Este repositorio unifica dos skills (`video-shotcraft` y `remotion-motion-graphics`) para generar dos tipos de proyectos en Remotion:
 
-1. **Estructura y Guion de Lanzamientos SaaS (`.claude/skills/video-shotcraft/`):**
-   - Define la narrativa, estructura de escenas (gancho, problema, demo de producto, llamada a la acción), ritmo y enfoque comercial de lanzamientos SaaS.
-   - Consulta siempre su `SKILL.md` y referencias antes de planificar el guion o la secuencia de tomas.
+## Modo 1: Lanzamientos Comerciales SaaS
+- Usa `video-shotcraft` completo (capturas reales 2x del producto, narrativa gancho-problema-demo-CTA) combinado con `remotion-motion-graphics` para acabados visuales.
 
-2. **Acabados Visuales y Motion Graphics (`.claude/skills/remotion-motion-graphics/`):**
-   - Define la implementación técnica en Remotion: tipografía, físicas de animación (*spring*), composición visual, assets y renderizado profesional.
-   - Consulta siempre su `SKILL.md`, `references/` y `assets/` antes de escribir componentes React/Remotion.
+## Modo 2: Visuales Interactivos, Explicativos y Fondos de Presentación (War Room / Clases)
+Cuando se soliciten videos educativos, diagramas de arquitectura (ej. AWS vs. Azure), fondos en bucle (HUDs) o videos narrativos sin una app web local que capturar:
+1. **De `video-shotcraft`:** Usa ÚNICAMENTE su catálogo de movimientos de cámara (`references/shots/`), composición de pantalla dividida (*split-screen*), ritmo y sincronización de efectos sonoros (`references/sound-design.md`). **Omite** la captura de pantallas de navegador o plantillas de venta SaaS.
+2. **De `remotion-motion-graphics`:** Aplica estrictamente las 10 reglas de calidad (físicas `spring`, `WordReveal` escalonado, contadores numéricos con `tabular-nums`, pila de 5 capas con `BgMesh` + `Grade` + `Grain` + `Vignette`, y verificación visual por fotogramas).
 
-## Flujo de Trabajo Obligatorio
-Al recibir una solicitud para crear un video:
-1. Diseña la estructura narrativa y comercial aplicando `.claude/skills/video-shotcraft/`.
-2. Programa los componentes y animaciones en Remotion aplicando `.claude/skills/remotion-motion-graphics/`.
+## Reglas Visuales para Presentaciones en Vivo
+- **Legibilidad en proyector:** Usa alto contraste (fondos oscuros `#0A0A0F` o `#070B14`), tipografía gruesa (≥700) y evita saturar la pantalla con párrafos largos; prioriza diagramas animados, flujos de datos y marcadores tipo HUD.
+- **Paletas temáticas:** Si el guion enfrenta dos tecnologías (ej. AWS vs. Azure), define tokens claros en `src/theme.ts` (ej. AWS `#FF9900` Naranja Táctico vs. Azure `#0078D4` / `#22D3EE` Azul Cian) manteniendo un solo elemento brillante protagonista por escena.
