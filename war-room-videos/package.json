@@ -1,7 +1,7 @@
 {
   "name": "war-room-videos",
   "version": "1.0.0",
-  "description": "My Remotion video",
+  "description": "Operación Código Rojo · RAG — 13 videos Remotion (AWS vs Azure) para presentación en vivo",
   "repository": {},
   "license": "UNLICENSED",
   "engines": {
@@ -10,6 +10,8 @@
   "private": true,
   "dependencies": {
     "@remotion/cli": "4.0.543",
+    "@remotion/google-fonts": "4.0.543",
+    "@remotion/media": "4.0.543",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "remotion": "4.0.543"
@@ -26,7 +28,10 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "render:all": "node scripts/render-all.mjs",
+    "stills": "node scripts/stills.mjs",
+    "sfx": "node scripts/make-sfx.mjs"
   },
   "allowScripts": {
     "esbuild": false

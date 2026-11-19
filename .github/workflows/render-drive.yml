@@ -1,0 +1,81 @@
+# Renderiza en paralelo las 13 composiciones de war-room-videos y sube cada MP4 a Google Drive.
+# Secrets requeridos (Settings → Secrets and variables → Actions):
+#   RCLONE_CONFIG_GDRIVE_TOKEN  JSON del token OAuth de rclone ({"access_token":...,"refresh_token":...})
+#   GDRIVEE_FOLDER_ID           ID de la carpeta destino en Google Drive
+name: Render 13 videos → Google Drive
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-drive
+  cancel-in-progress: false
+
+jobs:
+  render:
+    name: ${{ matrix.id }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        # IDs registrados en war-room-videos/src/Root.tsx (vía src/videos/registry.ts)
+        id:
+          - 00-Apertura-CodigoRojo
+          - R01-AWS
+          - R01-AZURE
+          - R02-AWS
+          - R02-AZURE
+          - R03-AWS
+          - R03-AZURE
+          - R04-AWS
+          - R04-AZURE
+          - R05-AWS
+          - R05-AZURE
+          - 11-Momento-STAR
+          - 12-Expediente-Azure
+    defaults:
+      run:
+        working-directory: war-room-videos
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: war-room-videos/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Preparar navegador de Remotion
+        run: npx remotion browser ensure
+
+      - name: Renderizar ${{ matrix.id }}
+        run: |
+          mkdir -p out
+          npx remotion render src/index.ts "${{ matrix.id }}" "out/${{ matrix.id }}.mp4" \
+            --codec=h264 --crf=17 --concurrency=2
+          ls -lh "out/${{ matrix.id }}.mp4"
+
+      - name: Instalar rclone
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq rclone
+          rclone version
+
+      - name: Subir a Google Drive
+        env:
+          RCLONE_CONFIG_GDRIVE_TYPE: drive
+          RCLONE_CONFIG_GDRIVE_SCOPE: drive
+          RCLONE_CONFIG_GDRIVE_TOKEN: ${{ secrets.RCLONE_CONFIG_GDRIVE_TOKEN }}
+          RCLONE_CONFIG_GDRIVE_ROOT_FOLDER_ID: ${{ secrets.GDRIVEE_FOLDER_ID }}
+        run: |
+          rclone copyto "out/${{ matrix.id }}.mp4" "gdrive:${{ matrix.id }}.mp4" --stats-one-line -v
