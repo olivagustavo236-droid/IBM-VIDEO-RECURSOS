@@ -6,6 +6,14 @@ name: Render 13 videos → Google Drive
 
 on:
   workflow_dispatch:
+    inputs:
+      votos:
+        description: >-
+          Resultados reales de las 5 rondas (R1..R5) separados por comas: AWS, AZURE, EMPATE o - (pendiente).
+          Ej.: AWS,AZURE,-,-,-  · Vacío = "VOTO REGISTRADO" en todas. Solo afecta a R05-* y 12-Expediente-Azure.
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -45,6 +53,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Preparar props (votos)
+        env:
+          VOTOS: ${{ inputs.votos }}
+        run: |
+          VOTOS="$(echo "$VOTOS" | tr -d '[:space:]' | tr '[:lower:]' '[:upper:]')"
+          if [ -z "$VOTOS" ]; then
+            VOTOS="-,-,-,-,-"
+          fi
+          IFS=',' read -ra V <<< "$VOTOS"
+          if [ "${#V[@]}" -ne 5 ] || [ "${VOTOS: -1}" = "," ]; then
+            echo "::error::'votos' debe tener exactamente 5 valores separados por comas (recibido: $VOTOS)"
+            exit 1
+          fi
+          JSON=""
+          for v in "${V[@]}"; do
+            case "$v" in
+              AWS|AZURE|EMPATE) item="\"$v\"" ;;
+              -|PENDIENTE) item="null" ;;
+              *) echo "::error::Valor no válido '$v'. Usa AWS, AZURE, EMPATE o -"; exit 1 ;;
+            esac
+            JSON="${JSON:+$JSON,}$item"
+          done
+          echo "{\"votes\":[$JSON]}" > props.json
+          echo "Props de render:"; cat props.json
+
       - name: Instalar Node.js
         uses: actions/setup-node@v4
         with:
@@ -62,7 +95,7 @@ jobs:
         run: |
           mkdir -p out
           npx remotion render src/index.ts "${{ matrix.id }}" "out/${{ matrix.id }}.mp4" \
-            --codec=h264 --crf=17 --concurrency=2
+            --codec=h264 --crf=17 --concurrency=2 --props=props.json
           ls -lh "out/${{ matrix.id }}.mp4"
 
       - name: Instalar rclone

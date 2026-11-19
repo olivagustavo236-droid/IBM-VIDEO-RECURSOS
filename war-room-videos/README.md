@@ -36,6 +36,9 @@ Todas las composiciones aceptan `--props` (o `RENDER_PROPS` en `render:all`):
 RENDER_PROPS='{"votes":["AWS","AZURE","AWS","AZURE","AZURE"]}' npm run render:all -- 12-Expediente-Azure
 ```
 
+En la nube (`.github/workflows/render-drive.yml`, Actions → Run workflow) el campo **votos** acepta
+`AWS,AZURE,-,-,-` (AWS, AZURE, EMPATE o `-` pendiente); vacío = VOTO REGISTRADO en las 5 rondas.
+
 ## Arquitectura
 
 ```
